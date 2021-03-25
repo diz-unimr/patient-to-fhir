@@ -1,0 +1,37 @@
+
+spring:
+  kafka:
+    bootstrapServers: ${BOOTSTRAP_SERVERS:localhost:9092}
+    security.protocol: ${SECURITY_PROTOCOL:PLAINTEXT}
+
+
+#  cloud:
+#    stream:
+#      function.definition: process
+#      bindings:
+#        process-in-0:
+#          destination: input-topic
+#        process-out-0:
+#          destination: output-topic
+#      kafka:
+#        streams:
+#          binder:
+#            applicationId: adt-to-fhir
+#            configuration:
+#              compression.type: gzip
+#              max.request.size: 5242880
+
+
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+  endpoints:
+    web:
+      exposure:
+        include: metrics,health
+
+logging:
+  level:
+    org.springframework.kafka.config: debug
+    de.unimarburg.diz.patienttofhir: debug
