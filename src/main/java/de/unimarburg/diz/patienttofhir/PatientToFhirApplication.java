@@ -1,4 +1,4 @@
-package de.unimarburg.diz.adttofhir;
+package de.unimarburg.diz.patienttofhir;
 
 import java.time.ZoneId;
 import java.util.TimeZone;
@@ -6,11 +6,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AdtToFhirApplication {
+public class PatientToFhirApplication {
 
 	public static void main(String[] args) {
 		TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("Europe/Berlin")));
-		SpringApplication.run(AdtToFhirApplication.class, args);
+		SpringApplication.run(PatientToFhirApplication.class, args);
 	}
 
 }

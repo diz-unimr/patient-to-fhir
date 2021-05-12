@@ -33,5 +33,5 @@ LABEL org.opencontainers.image.created=${BUILD_TIME} \
     org.opencontainers.image.version=${VERSION} \
     org.opencontainers.image.revision=${GIT_REF} \
     org.opencontainers.image.vendor="diz.uni-marburg.de" \
-    org.opencontainers.image.title="adt-to-fhir" \
-    org.opencontainers.image.description="Kafka Streams processor converting patient and encounter data fo FHIR."
+    org.opencontainers.image.title="patient-to-fhir" \
+    org.opencontainers.image.description="Kafka Streams processor converting patient data fo FHIR."

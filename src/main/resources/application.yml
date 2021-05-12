@@ -5,21 +5,21 @@ spring:
     security.protocol: ${SECURITY_PROTOCOL:PLAINTEXT}
 
 
-#  cloud:
-#    stream:
-#      function.definition: process
-#      bindings:
-#        process-in-0:
-#          destination: input-topic
-#        process-out-0:
-#          destination: output-topic
-#      kafka:
-#        streams:
-#          binder:
-#            applicationId: adt-to-fhir
-#            configuration:
-#              compression.type: gzip
-#              max.request.size: 5242880
+  cloud:
+    stream:
+      function.definition: process
+      bindings:
+        process-in-0:
+          destination: aim-patient
+        process-out-0:
+          destination: patient-fhir
+      kafka:
+        streams:
+          binder:
+            applicationId: patient-to-fhir
+            configuration:
+              compression.type: gzip
+              max.request.size: 5242880
 
 
 management:
