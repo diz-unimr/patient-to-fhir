@@ -97,7 +97,7 @@ services:
     image: byrnedo/alpine-curl:0.1.8
     command: -i -X POST -H "Accept:application/json"
       -H "Content-Type:application/json"
-      -d @/connect/connect-lab.json
+      -d @/connect/connect-patient.json
       --retry-connrefused
       --connect-timeout 10
       --max-time 100
@@ -105,7 +105,7 @@ services:
       --retry-delay 10
       http://kafka-connect:8083/connectors/
     volumes:
-      - ../connect/connect-lab.json:/connect/connect-lab.json:ro
+      - ./connect/connect-patient.json:/connect/connect-patient.json:ro
     depends_on:
       - kafka-connect
       - aim-db
@@ -170,9 +170,3 @@ services:
       - POSTGRES_PASSWORD=test
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d:ro
-
-  prometheus:
-    image: prom/prometheus:v2.25.0
-    network_mode: host
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
