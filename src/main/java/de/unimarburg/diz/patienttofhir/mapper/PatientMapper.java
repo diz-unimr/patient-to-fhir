@@ -1,16 +1,111 @@
 package de.unimarburg.diz.patienttofhir.mapper;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
+import de.unimarburg.diz.patienttofhir.configuration.FhirProperties;
 import de.unimarburg.diz.patienttofhir.model.PatientModel;
+import java.time.ZoneId;
+import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Patient.LinkType;
+import org.hl7.fhir.r4.model.Patient.PatientLinkComponent;
+import org.hl7.fhir.r4.model.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
 
-    @Override
-    public Bundle apply(PatientModel value) {
+    private final FhirProperties fhirProperties;
+    private final static Logger log = LoggerFactory.getLogger(PatientMapper.class);
+    private final IParser fhirParser;
 
-        return null;
+    public PatientMapper(FhirProperties fhirProperties, FhirContext fhirContext) {
+        this.fhirProperties = fhirProperties;
+        this.fhirParser = fhirContext.newJsonParser();
+    }
+
+    @Override
+    public Bundle apply(PatientModel model) {
+
+        try {
+            var patient = mapPatient(model);
+            return createBundle(patient);
+        } catch (Exception e) {
+            log.error("Mapping failed for Patient[{}] with id {}",
+                model.getId(), model.getPatientId(), e);
+            return null;
+        }
+    }
+
+    private Bundle createBundle(Patient patient) {
+        var bundle = new Bundle();
+
+        // set meta information
+        bundle.setId(patient.getIdentifierFirstRep().getValue());
+        bundle.setType(BundleType.TRANSACTION);
+        bundle.addEntry()
+            .setFullUrl(patient.getResourceType()
+                .name() + "/" + patient.getIdentifierFirstRep())
+            .setResource(patient);
+
+        log.debug("Mapped successfully to FHIR bundle: {}",
+            fhirParser.encodeResourceToString(bundle));
+        return bundle;
+    }
+
+    private Patient mapPatient(PatientModel model) {
+        var patient = new Patient();
+
+        // identifier
+        patient.addIdentifier(new Identifier().setSystem(fhirProperties.getSystems().getPatientId())
+            .setValue(model.getPatientId()));
+
+        // name
+        patient.addName(new HumanName().addPrefix(model.getTitle()).addGiven(model.getFirstName())
+            .setFamily(model.getLastName()));
+        if (StringUtils.isNotBlank(model.getTitle())) {
+            patient.getNameFirstRep().addPrefix(model.getTitle());
+        }
+
+        // birthdate
+        // uses application wide timezone
+        patient.setBirthDate(Date.from(model.getBirthDate().atStartOfDay()
+            .atZone(ZoneId.systemDefault())
+            .toInstant()));
+
+        // gender
+        patient.setGender(parseGender(model.getSex()));
+
+        // invalidated by
+        if (model.getInvalidatedBy() != null) {
+            patient
+                .addLink(new PatientLinkComponent()
+                    .setOther(new Reference("Patient/" + model.getInvalidatedBy()))
+                    .setType(LinkType.REPLACEDBY));
+        }
+
+        return patient;
+    }
+
+    private AdministrativeGender parseGender(char sex) {
+        switch (sex) {
+            case 'O':
+                return AdministrativeGender.OTHER;
+            case 'F':
+                return AdministrativeGender.FEMALE;
+            case 'M':
+                return AdministrativeGender.MALE;
+            default:
+                return AdministrativeGender.UNKNOWN;
+        }
     }
 }
