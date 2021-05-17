@@ -58,7 +58,7 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         bundle.setType(BundleType.TRANSACTION);
 
         // add patient resource
-        bundle.addEntry()
+        bundle.addEntry().setResource(patient).setFullUrl("Patient/" + resourceId)
             .getRequest()
             .setMethod(HTTPVerb.PUT)
             .setUrl(UrlUtil.escapeUrlParam(String
