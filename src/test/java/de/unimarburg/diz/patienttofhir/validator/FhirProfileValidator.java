@@ -7,6 +7,7 @@ import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.ValidationResult;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
@@ -55,8 +56,9 @@ public class FhirProfileValidator {
     private static Collection<StructureDefinition> getProfiles(FhirContext ctx) {
         // get profiles
         if (loadedProfiles == null || loadedProfiles.isEmpty()) {
-            loadedProfiles = FhirResourceLoader.loadFromClasspath(ctx, "fhir", "*.json")
-                .stream()
+            loadedProfiles = Stream
+                .concat(FhirResourceLoader.loadFromClasspath(ctx, "fhir", "*.json").stream(),
+                    FhirResourceLoader.loadFromDirectory(ctx, "node_modules", "*.json").stream())
                 .filter(StructureDefinition.class::isInstance)
                 .map(StructureDefinition.class::cast)
                 .collect(Collectors.toList());
@@ -67,7 +69,7 @@ public class FhirProfileValidator {
     private static Collection<CodeSystem> getCodeSystems(FhirContext ctx) {
         // get code systems
         if (loadedCodeSystems == null || loadedCodeSystems.isEmpty()) {
-            loadedCodeSystems = FhirResourceLoader.loadFromDirectory(ctx, "codesystems","*")
+            loadedCodeSystems = FhirResourceLoader.loadFromDirectory(ctx, "codesystems", "*")
                 .stream()
                 .filter(CodeSystem.class::isInstance)
                 .map(CodeSystem.class::cast)
@@ -79,7 +81,7 @@ public class FhirProfileValidator {
     private static Collection<ValueSet> getValueSets(FhirContext ctx) {
         // get value sets
         if (loadedValueSets == null || loadedValueSets.isEmpty()) {
-            loadedValueSets = FhirResourceLoader.loadFromDirectory(ctx, "valueset","*")
+            loadedValueSets = FhirResourceLoader.loadFromDirectory(ctx, "valueset", "*")
                 .stream()
                 .filter(ValueSet.class::isInstance)
                 .map(ValueSet.class::cast)
