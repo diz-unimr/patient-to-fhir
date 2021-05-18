@@ -2,7 +2,6 @@ package de.unimarburg.diz.patienttofhir.mapper;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import ca.uhn.fhir.util.UrlUtil;
 import de.unimarburg.diz.patienttofhir.configuration.FhirProperties;
 import de.unimarburg.diz.patienttofhir.model.PatientModel;
 import java.time.ZoneId;
@@ -61,8 +60,9 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         bundle.addEntry().setResource(patient).setFullUrl("Patient/" + resourceId)
             .getRequest()
             .setMethod(HTTPVerb.PUT)
-            .setUrl(UrlUtil.escapeUrlParam(String
-                .format("Patient?%s|%s", patient.getIdentifierFirstRep().getSystem(), resourceId)));
+            // UrlUtil.escapeUrlParam ?
+            .setUrl(String
+                .format("Patient?%s|%s", patient.getIdentifierFirstRep().getSystem(), resourceId));
 
         log.debug("Mapped successfully to FHIR bundle: {}",
             fhirParser.encodeResourceToString(bundle));

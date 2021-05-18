@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class PatientMapperTests {
     }
 
     @Test
+    @Disabled("Needs pseudonymization to validate")
     public void resourcesAreValid() {
         // arrange
         var model = createTestModel();
