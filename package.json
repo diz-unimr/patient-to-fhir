@@ -1,0 +1,18 @@
+{
+  "name": "patient-to-fhir",
+  "version": "1.0.0",
+  "description": "> Kafka Stream Processor, transforming patient data to FHIR",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@gitlab.diz.uni-marburg.de:2224/etl/patient-to-fhir.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "de.medizininformatikinitiative.kerndatensatz.meta": "^1.0.2"
+  }
+}
