@@ -75,7 +75,6 @@ public class PatientMapperTests {
     @Test
     public void exampleResultIsValid() throws IOException {
         // arrange
-        var model = createTestModel();
         var bundle = jsonParser
             .parseResource(Bundle.class, exampleResult.getInputStream());
 

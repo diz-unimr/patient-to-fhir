@@ -52,7 +52,7 @@ check.dependsOn integrationTest
 
 ext {
     set('springCloudVersion', "2020.0.0-SNAPSHOT")
-    set("hapiFhirVersion", "5.1.0")
+    set("hapiFhirVersion", "5.3.3")
     set('testContainersVersion', '1.15.0-rc2')
 }
 
