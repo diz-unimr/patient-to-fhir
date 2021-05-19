@@ -11,7 +11,7 @@ public class PatientModel implements Serializable {
 
     private int id;
     private char sex;
-    private Integer invalidatedBy;
+    private String invalidatedBy;
     private String patientId;
     private String firstName;
     private String lastName;
@@ -30,12 +30,12 @@ public class PatientModel implements Serializable {
         this.sex = sex;
     }
 
-    public Integer getInvalidatedBy() {
+    public String getInvalidatedBy() {
         return invalidatedBy;
     }
 
-    @JsonSetter("patient_invalidated_by_fk")
-    public void setInvalidatedBy(Integer invalidatedBy) {
+    @JsonSetter("invalidated_by_pid")
+    public void setInvalidatedBy(String invalidatedBy) {
         this.invalidatedBy = invalidatedBy;
     }
 
