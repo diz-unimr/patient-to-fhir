@@ -7,7 +7,7 @@
     "connection.url": "jdbc:postgresql://aim-db/aim",
     "connection.user": "aim",
     "connection.password": "test",
-    "query": "select id, sex_fk,patient_invalidated_by_fk,patient_id,last_name,first_name,title,birth_date,inserted_when,last_modified_when,deleted_when from patient",
+    "query": "select id, sex_fk,(select patient_id from patient o where o.id=p.patient_invalidated_by_fk) as invalidated_by_pid,patient_id,last_name,first_name,title,birth_date,inserted_when,last_modified_when,deleted_when from patient p",
     "mode": "timestamp+incrementing",
     "incrementing.column.name": "id",
     "timestamp.column.name": "last_modified_when",

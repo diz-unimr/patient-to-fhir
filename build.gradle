@@ -134,6 +134,6 @@ jacocoTestReport {
 }
 
 bootJar {
-    mainClassName = 'de.unimarburg.diz.patienttofhir.PatientToFhirApplication'
+    mainClass.set('de.unimarburg.diz.patienttofhir.PatientToFhirApplication')
     layered()
 }

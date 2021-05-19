@@ -11,6 +11,8 @@ import org.apache.kafka.streams.kstream.ValueMapper;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
@@ -53,16 +55,17 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         var resourceId = patient.getIdentifierFirstRep().getValue();
 
         // set meta information
-        bundle.setId(resourceId);
         bundle.setType(BundleType.TRANSACTION);
 
         // add patient resource
         bundle.addEntry().setResource(patient).setFullUrl("Patient/" + resourceId)
             .getRequest()
             .setMethod(HTTPVerb.PUT)
-            // UrlUtil.escapeUrlParam ?
-            .setUrl(String
-                .format("Patient?%s|%s", patient.getIdentifierFirstRep().getSystem(), resourceId));
+            .setUrl("Patient/" + resourceId);
+        // conditional update
+//            .setUrl(String
+//                .format("Patient?identifier=%s|%s", patient.getIdentifierFirstRep().getSystem(),
+//                    resourceId));
 
         log.debug("Mapped successfully to FHIR bundle: {}",
             fhirParser.encodeResourceToString(bundle));
@@ -78,21 +81,31 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
 
         // identifier
         patient.addIdentifier(new Identifier().setSystem(fhirProperties.getSystems().getPatientId())
-            .setValue(model.getPatientId()));
+            .setValue(model.getPatientId())
+            .setType(new CodeableConcept().addCoding(
+                new Coding().setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+                    .setCode("MR"))));
 
         // name
-        patient.addName(new HumanName().addPrefix(model.getTitle())
+        patient.addName(new HumanName()
+            .addPrefix(model.getTitle())
             .addGiven(StringUtils.capitalize(model.getFirstName()))
             .setFamily(StringUtils.capitalize(model.getLastName())));
         if (StringUtils.isNotBlank(model.getTitle())) {
             patient.getNameFirstRep().addPrefix(StringUtils.capitalize(model.getTitle()));
         }
 
-        // birthdate
+        // birth date
         // uses application wide timezone
-        patient.setBirthDate(Date.from(model.getBirthDate().atStartOfDay()
-            .atZone(ZoneId.systemDefault())
-            .toInstant()));
+        if (model.getBirthDate() != null) {
+            patient.setBirthDate(Date.from(model.getBirthDate().atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant()));
+        } else {
+            log.warn(
+                "Missing birth date for Patient[{}] with PID: {}. This resource will not validate against the patient profile.",
+                model.getId(), model.getPatientId());
+        }
 
         // gender
         patient.setGender(parseGender(model.getSex()));
@@ -102,7 +115,16 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
             patient
                 .addLink(new PatientLinkComponent()
                     .setOther(new Reference("Patient/" + model.getInvalidatedBy()))
+                    // logical reference
+//                    .setOther(new Reference().setIdentifier(
+//                        new Identifier().setSystem(fhirProperties.getSystems().getPatientId())
+//                            .setValue(model.getInvalidatedBy())
+//                            .setType(new CodeableConcept().addCoding(
+//                                new Coding()
+//                                    .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+//                                    .setCode("MR")))))
                     .setType(LinkType.REPLACEDBY));
+            patient.setActive(false);
         }
 
         return patient;
