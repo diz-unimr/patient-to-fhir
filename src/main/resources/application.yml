@@ -26,6 +26,7 @@ fhir:
   systems:
     patientId: "https://fhir.diz.uni-marburg.de/NamingSystem/identifier/PatientId"
   generateNarrative: false
+  useConditionalUpdate: false
 
 services:
   pseudonymizer:

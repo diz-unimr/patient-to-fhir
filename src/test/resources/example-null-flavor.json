@@ -1,0 +1,72 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "PSEUDED",
+        "display": "part of the resource is pseudonymized"
+      }
+    ]
+  },
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "Patient/pUNQKJM88JCFJKZ1NW5YT6WDGAG98EWRXXNK",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pUNQKJM88JCFJKZ1NW5YT6WDGAG98EWRXXNK",
+        "meta": {
+          "profile": [
+            "https://fhir.miracum.org/core/StructureDefinition/PatientIn"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "PSEUDED",
+              "display": "part of the resource is pseudonymized"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR"
+                }
+              ]
+            },
+            "system": "https://fhir.diz.uni-marburg.de/NamingSystem/identifier/PatientId",
+            "value": "pUNQKJM88JCFJKZ1NW5YT6WDGAG98EWRXXNK"
+          }
+        ],
+        "gender": "female",
+        "_birthDate": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/iso21090-nullFlavor",
+              "valueCode": "UNK"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient?identifier=https://fhir.diz.uni-marburg.de/NamingSystem/identifier/PatientId|pUNQKJM88JCFJKZ1NW5YT6WDGAG98EWRXXNK"
+      }
+    }
+  ]
+}

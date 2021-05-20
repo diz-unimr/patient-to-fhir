@@ -27,11 +27,12 @@ public class PatientToFhirProcessor {
     @Bean
     public Function<KTable<String, PatientModel>, KStream<String, Bundle>> process() {
 
-        return patient ->
-            patient.
-                mapValues(patientMapper)
-                .toStream().filter((k, v) -> v != null)
-                .mapValues(fhirPseudonymizer::process);
+        return patient -> patient.
+            mapValues(patientMapper)
+            .toStream()
+            .filter((k, v) -> v != null)
+            .mapValues(fhirPseudonymizer::process)
+            .mapValues(patientMapper::fixBundleConditional);
     }
 
 }

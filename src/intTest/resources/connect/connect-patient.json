@@ -1,0 +1,26 @@
+{
+  "name": "patient",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "poll.interval.ms": "300000",
+    "connection.url": "jdbc:postgresql://aim-db/aim",
+    "connection.user": "aim",
+    "connection.password": "test",
+    "query": "select id, sex_fk,(select patient_id from patient o where o.id=p.patient_invalidated_by_fk) as invalidated_by_pid,patient_id,last_name,first_name,title,birth_date,inserted_when,last_modified_when,deleted_when from patient p",
+    "mode": "timestamp+incrementing",
+    "incrementing.column.name": "id",
+    "timestamp.column.name": "last_modified_when",
+    "transforms": "createKey,extractInt",
+    "transforms.createKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.createKey.fields": "id",
+    "transforms.extractInt.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.extractInt.field": "id",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "topic.prefix": "aim-patient",
+    "numeric.mapping": "best_fit"
+  }
+}

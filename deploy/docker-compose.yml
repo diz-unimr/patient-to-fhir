@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  patient-to-fhir:
+    image: registry.diz.uni-marburg.de/etl/patient-to-fhir:${IMAGE_TAG:-latest}
+    environment:
+      SPRING_CLOUD_STREAM_BINDINGS_PROCESS_IN_0_DESTINATION: ${INPUT_TOPIC:-aim-patient}
+      SPRING_CLOUD_STREAM_BINDINGS_PROCESS_OUT_0_DESTINATION: ${OUTPUT_TOPIC:-patient-fhir}
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: ${KAFKA_BROKERS}
+      SERVICES_PSEUDONYMIZER_URL: ${PSEUDONYMIZER_URL}
+      FHIR_USECONDITIONALUPDATES: ${USE_CONDITIONAL_UPDATES:-false}
+    ports:
+      - "${WEB_PORT:-8090}:8080"
