@@ -1,8 +1,9 @@
 package de.unimarburg.diz.patienttofhir.configuration;
 
-import javax.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotNull;
 
 
 @ConfigurationProperties(prefix = "fhir")
@@ -12,6 +13,18 @@ public class FhirProperties {
     private final Systems systems = new Systems();
     @NotNull
     private Boolean generateNarrative;
+    
+
+    @NotNull
+    private Boolean useConditionalUpdate;
+
+    public Boolean getUseConditionalUpdate() {
+        return useConditionalUpdate;
+    }
+
+    public void setUseConditionalUpdate(Boolean useConditionalUpdate) {
+        this.useConditionalUpdate = useConditionalUpdate;
+    }
 
     public Systems getSystems() {
         return systems;

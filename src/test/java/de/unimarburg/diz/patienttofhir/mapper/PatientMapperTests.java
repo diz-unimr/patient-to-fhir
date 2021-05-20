@@ -14,7 +14,6 @@ import java.time.ZoneId;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +32,8 @@ public class PatientMapperTests {
 
     @Value("classpath:example-pseuded-patient.json")
     Resource exampleResult;
+    @Value("classpath:example-null-flavor.json")
+    Resource exampleNullFlavor;
 
     private final static Logger log = LoggerFactory.getLogger(PatientMapperTests.class);
     private static FhirValidator validator;
@@ -51,13 +52,12 @@ public class PatientMapperTests {
         var bundle = mapper.apply(model);
 
         assertThat(bundle).isInstanceOf(Bundle.class)
-            .extracting(x -> x.getEntryFirstRep().getResource()).
-            isInstanceOf(
-                Patient.class);
+            .extracting(x -> x.getEntryFirstRep()
+                .getResource())
+            .isInstanceOf(Patient.class);
     }
 
     @Test
-    @Disabled("Needs pseudonymization to validate")
     public void resourcesAreValid() {
         // arrange
         var model = createTestModel();
@@ -75,8 +75,7 @@ public class PatientMapperTests {
     @Test
     public void exampleResultIsValid() throws IOException {
         // arrange
-        var bundle = jsonParser
-            .parseResource(Bundle.class, exampleResult.getInputStream());
+        var bundle = jsonParser.parseResource(Bundle.class, exampleNullFlavor.getInputStream());
 
         // act
         var validation = validator.validateWithResult(bundle);
@@ -90,15 +89,20 @@ public class PatientMapperTests {
     private PatientModel createTestModel() {
         var model = new PatientModel();
         model.setId(1);
-        model.setBirthDate(LocalDate.now().minusYears(42));
+        model.setBirthDate(LocalDate.now()
+            .minusYears(42));
         model.setInvalidatedBy("000042");
         model.setFirstName("PETER");
         model.setLastName("LUSTIG");
         model.setPatientId("000042");
-        model.setInserted(
-            LocalDateTime.now().minusDays(2).atZone(ZoneId.systemDefault()).toInstant());
-        model.setModified(
-            LocalDateTime.now().minusMinutes(5).atZone(ZoneId.systemDefault()).toInstant());
+        model.setInserted(LocalDateTime.now()
+            .minusDays(2)
+            .atZone(ZoneId.systemDefault())
+            .toInstant());
+        model.setModified(LocalDateTime.now()
+            .minusMinutes(5)
+            .atZone(ZoneId.systemDefault())
+            .toInstant());
         model.setTitle("DR.");
         model.setSex('M');
 
