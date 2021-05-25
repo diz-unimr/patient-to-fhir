@@ -108,7 +108,7 @@ public abstract class TestContainerBase {
             "http://" + connect.getHost() + ":" + connect.getFirstMappedPort() + "/connectors";
         var request = HttpRequest.newBuilder()
             .uri(new URI(host))
-            .header("Content-Type", "application/json")
+            .headers("Content-Type", "application/json", "Accept", "application/json")
             .POST(BodyPublishers.ofFile(Path.of(ClassLoader.getSystemResource(configFilename)
                 .toURI())))
             .build();
