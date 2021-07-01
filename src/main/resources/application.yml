@@ -46,4 +46,4 @@ management:
 logging:
   level:
     org.springframework.kafka.config: info
-    de.unimarburg.diz.labtofhir: ${LOG_LEVEL:info}
+    de.unimarburg.diz.patienttofhir: ${LOG_LEVEL:info}
