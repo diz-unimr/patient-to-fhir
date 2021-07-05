@@ -10,13 +10,13 @@ spring:
       function.definition: process
       bindings:
         process-in-0:
-          destination: aim-patient
+          destination: aim-visit
         process-out-0:
-          destination: patient-fhir
+          destination: encounter-fhir
       kafka:
         streams:
           binder:
-            applicationId: patient-to-fhir
+            applicationId: visit-to-fhir
             configuration:
               compression.type: gzip
               max.request.size: 5242880
@@ -24,7 +24,7 @@ spring:
 
 fhir:
   systems:
-    patientId: "https://fhir.diz.uni-marburg.de/NamingSystem/identifier/PatientId"
+    encounterId: "https://fhir.diz.uni-marburg.de/NamingSystem/identifier/EncounterId"
   generateNarrative: false
   useConditionalUpdate: false
 
@@ -46,4 +46,4 @@ management:
 logging:
   level:
     org.springframework.kafka.config: info
-    de.unimarburg.diz.labtofhir: ${LOG_LEVEL:info}
+    de.unimarburg.diz.visittofhir: ${LOG_LEVEL:info}
