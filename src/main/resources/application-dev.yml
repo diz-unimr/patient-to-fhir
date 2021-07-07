@@ -3,12 +3,15 @@ spring:
     enabled: true
   kafka:
     bootstrapServers: ${BOOTSTRAP_SERVERS:localhost:9092}
-    security.protocol: ${SECURITY_PROTOCOL:PLAINTEXT}
+    security.protocol: SSL
     ssl:
-      trust-store-location: file://${SSL_TRUST_STORE_LOCATION:/opt/patient-to-fhir/ssl/truststore.jks}
-      trust-store-password: ${SSL_TRUST_STORE_PASSWORD}
-      key-store-location: file://${SSL_KEY_STORE_LOCATION:/opt/patient-to-fhir/ssl/keystore.jks}
-      key-store-password: ${SSL_KEY_STORE_PASSWORD}
+      trust-store-location: file://${user.dir}/dev/ssl/patient-to-fhir.truststore.jks
+      trust-store-password: ssl-test
+      key-store-location: file://${user.dir}/dev/ssl/patient-to-fhir.keystore.jks
+      key-store-password: ssl-test
+      key-password: ssl-test
+    properties:
+      ssl.endpoint.identification.algorithm:
 
 
   cloud:
@@ -16,13 +19,13 @@ spring:
       function.definition: process
       bindings:
         process-in-0:
-          destination: aim-visit
+          destination: aim-patient
         process-out-0:
-          destination: encounter-fhir
+          destination: patient-fhir
       kafka:
         streams:
           binder:
-            applicationId: visit-to-fhir
+            applicationId: patient-to-fhir
             configuration:
               compression.type: gzip
               max.request.size: 5242880
@@ -30,7 +33,7 @@ spring:
 
 fhir:
   systems:
-    encounterId: "https://fhir.diz.uni-marburg.de/NamingSystem/identifier/EncounterId"
+    patientId: "https://fhir.diz.uni-marburg.de/NamingSystem/identifier/PatientId"
   generateNarrative: false
   useConditionalUpdate: false
 
@@ -38,9 +41,6 @@ services:
   pseudonymizer:
     url: "http://localhost:5000/fhir"
 
-management:
-  server:
-    port: 8090
   endpoints:
     web:
       exposure:
@@ -52,4 +52,6 @@ management:
 logging:
   level:
     org.springframework.kafka.config: info
-    de.unimarburg.diz.visittofhir: ${LOG_LEVEL:info}
+    de.unimarburg.diz.patienttofhir: debug
+server:
+  port: 0
