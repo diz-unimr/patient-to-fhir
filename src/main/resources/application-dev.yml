@@ -3,12 +3,15 @@ spring:
     enabled: true
   kafka:
     bootstrapServers: ${BOOTSTRAP_SERVERS:localhost:9092}
-    security.protocol: ${SECURITY_PROTOCOL:PLAINTEXT}
+    security.protocol: SSL
     ssl:
-      trust-store-location: file://${SSL_TRUST_STORE:${user.dir}/dev/ssl/patient-to-fhir.truststore.jks}
-      trust-store-password: ${SSL_TRUST_STORE_PASSWORD}
-      key-store-location: file://${SSL_KEY_STORE_FILE:${user.dir}/dev/ssl/patient-to-fhir.keystore.jks}
-      key-store-password: ${SSL_KEY_STORE_PASSWORD}
+      trust-store-location: file://${user.dir}/dev/ssl/patient-to-fhir.truststore.jks
+      trust-store-password: ssl-test
+      key-store-location: file://${user.dir}/dev/ssl/patient-to-fhir.keystore.jks
+      key-store-password: ssl-test
+      key-password: ssl-test
+    properties:
+      ssl.endpoint.identification.algorithm:
 
 
   cloud:
@@ -38,9 +41,6 @@ services:
   pseudonymizer:
     url: "http://localhost:5000/fhir"
 
-management:
-  server:
-    port: 8090
   endpoints:
     web:
       exposure:
@@ -52,4 +52,6 @@ management:
 logging:
   level:
     org.springframework.kafka.config: info
-    de.unimarburg.diz.patienttofhir: ${LOG_LEVEL:info}
+    de.unimarburg.diz.patienttofhir: debug
+server:
+  port: 0
