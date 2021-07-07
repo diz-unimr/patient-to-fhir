@@ -20,7 +20,7 @@
     "key.converter.schemas.enable": "false",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter.schemas.enable": "false",
-    "topic.prefix": "aim-visit",
+    "topic.prefix": "aim-patient",
     "numeric.mapping": "best_fit"
   }
 }

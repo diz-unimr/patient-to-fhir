@@ -170,4 +170,3 @@ services:
       - POSTGRES_PASSWORD=test
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d:ro
-
