@@ -5,7 +5,7 @@ spring:
     bootstrapServers: ${BOOTSTRAP_SERVERS:localhost:9092}
     security.protocol: ${SECURITY_PROTOCOL:PLAINTEXT}
     ssl:
-      trust-store-location: file://${SSL_KEY_STORE_LOCATION_INTERNAL:/opt/patient-to-fhir/ssl/truststore.jks}
+      trust-store-location: file://${SSL_TRUST_STORE_LOCATION_INTERNAL:/opt/patient-to-fhir/ssl/truststore.jks}
       trust-store-password: ${SSL_TRUST_STORE_PASSWORD}
       key-store-location: file://${SSL_KEY_STORE_LOCATION_INTERNAL:/opt/patient-to-fhir/ssl/keystore.jks}
       key-store-password: ${SSL_KEY_STORE_PASSWORD}
