@@ -30,7 +30,7 @@ spring:
 
 fhir:
   systems:
-    patientId: "https://fhir.diz.uni-marburg.de/NamingSystem/identifier/PatientId"
+    patientId: "https://fhir.diz.uni-marburg.de/sid/patient-id"
   generateNarrative: false
   useConditionalUpdate: false
 
