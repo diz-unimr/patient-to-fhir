@@ -34,10 +34,6 @@ fhir:
   generateNarrative: false
   useConditionalUpdate: false
 
-services:
-  pseudonymizer:
-    url: "http://localhost:5000/fhir"
-
 management:
   server:
     port: 8080

@@ -8,7 +8,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.testcontainers.containers.BindMode;
@@ -22,7 +21,6 @@ import org.testcontainers.utility.DockerImageName;
 public abstract class TestContainerBase {
 
     protected static KafkaContainer kafka;
-    protected static GenericContainer pseudonymizerContainer;
 
     protected static void setup() throws Exception {
 
@@ -32,19 +30,12 @@ public abstract class TestContainerBase {
         var aimDb = createAimDbContainer(network);
         aimDb.start();
 
-        // pseudonymization
-        pseudonymizerContainer = createPseudonymizerContainer(network);
-        pseudonymizerContainer.start();
-
         // setup & start kafka
         kafka = createKafkaContainer(network);
         kafka.start();
 
         // setup & start kafka connect
         createKafkaConnectContainer(kafka);
-
-        // kafdrop
-        createKafdropContainer(network);
     }
 
     private static PostgreSQLContainer createAimDbContainer(Network network) {
@@ -117,75 +108,6 @@ public abstract class TestContainerBase {
             .send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 201) {
             fail("Error setting up aim-db connector: " + response);
-        }
-    }
-
-    private static GenericContainer createPseudonymizerContainer(Network network) {
-        var gpasContainer = createGpasContainer(network);
-
-        return new GenericContainer<>(DockerImageName.parse(
-            "registry.diz.uni-marburg.de/docker/fhir-pseudonymizer:1.6.0")).withEnv(
-            Collections.singletonMap("GPAS__URL", "http://gpas:8080/gpas/gpasService"))
-            .withClasspathResourceMapping("anonymization.yaml", "/etc/anonymization.yaml",
-                BindMode.READ_ONLY)
-            .withNetwork(network)
-            .waitingFor(Wait.forHttp("/fhir/metadata"))
-            .withExposedPorts(8080);
-    }
-
-
-    private static GenericContainer createGpasContainer(Network network) {
-        var container = new GenericContainer<>(
-            DockerImageName.parse("tmfev/gpas:1.9.1")).withNetworkAliases("gpas")
-            .withNetwork(network)
-            .withExposedPorts(8080)
-            .waitingFor(Wait.forListeningPort());
-
-        container.start();
-        try {
-            initGpas(
-                String.format("http://%s:%d", container.getHost(), container.getFirstMappedPort()));
-        } catch (Exception e) {
-            fail("Error setting up GPas: ");
-        }
-
-        return container;
-    }
-
-    private static void createKafdropContainer(Network network) {
-        var container = new GenericContainer<>(
-            DockerImageName.parse("obsidiandynamics/kafdrop:3.27.0")).withNetworkAliases("kafdrop")
-            .withNetwork(network)
-            .withExposedPorts(9000)
-            .withEnv(Map.of("KAFKA_BROKERCONNECT", kafka.getNetworkAliases()
-                .get(0) + ":9092", "SERVER_SERVLET_CONTEXTPATH", "/"))
-            .waitingFor(Wait.forListeningPort());
-
-        container.start();
-    }
-
-    private static HttpResponse<String> createDomain(String host, String file) {
-        try {
-            var request = HttpRequest.newBuilder()
-                .uri(new URI(host + "/gpas/DomainService"))
-                .header("Content-Type", "application/json")
-                .POST(BodyPublishers.ofFile(Path.of(ClassLoader.getSystemResource(file)
-                    .toURI())))
-                .build();
-
-            return HttpClient.newHttpClient()
-                .send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            fail("Error create GPas Domain.", e.getMessage());
-            return null;
-        }
-    }
-
-    private static void initGpas(String host) {
-        // patient domain
-        var response = createDomain(host, "gpas/createPatientDomain.xml");
-        if (response.statusCode() != 200) {
-            fail("Error setting up gpas patient domain: " + response);
         }
     }
 }

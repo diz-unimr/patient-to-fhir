@@ -1,9 +1,9 @@
-FROM gradle:6.6-jdk11 AS build
+FROM gradle:7.2-jdk11 AS build
 WORKDIR /home/gradle/src
 ENV GRADLE_USER_HOME /gradle
 
 COPY build.gradle settings.gradle ./
-RUN gradle build || true
+RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
 
 COPY --chown=gradle:gradle . .
 RUN gradle build -x integrationTest --info && \

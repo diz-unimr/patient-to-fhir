@@ -110,7 +110,7 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         if (model.getBirthDate() != null) {
             patient.setBirthDate(Date.from(model.getBirthDate()
                 .atStartOfDay()
-                .atZone(ZoneId.systemDefault())
+                .atZone(ZoneId.systemDefault(   ))
                 .toInstant()));
         } else {
             patient.getBirthDateElement()
