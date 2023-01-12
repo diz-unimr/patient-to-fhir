@@ -88,6 +88,9 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         patient.setMeta(
             new Meta().addProfile("https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient"));
 
+        // last modified
+        patient.getMeta().setLastUpdated(Date.from(model.getModified()));
+
         // identifier
         patient.addIdentifier(new Identifier().setSystem(fhirProperties.getSystems()
             .getPatientId())
