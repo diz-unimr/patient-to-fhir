@@ -22,3 +22,15 @@ stages:
   - test
   - release
   - badges
+
+# use offline-scan while search.maven.org is down
+# remove later
+trivy:
+    script:
+        - echo "Scanning ${IMAGE_FQN}..."
+        - >
+            trivy --cache-dir $CACHE_DIR i --offline-scan --exit-code 0 --no-progress
+            --ignore-unfixed $IMAGE_FQN
+        - >
+            trivy --cache-dir $CACHE_DIR i --offline-scan --exit-code 1 --no-progress
+            --ignore-unfixed --severity CRITICAL $IMAGE_FQN

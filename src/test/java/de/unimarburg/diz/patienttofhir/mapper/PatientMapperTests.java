@@ -7,7 +7,6 @@ import ca.uhn.fhir.validation.FhirValidator;
 import de.unimarburg.diz.patienttofhir.configuration.FhirConfiguration;
 import de.unimarburg.diz.patienttofhir.model.PatientModel;
 import de.unimarburg.diz.patienttofhir.validator.FhirProfileValidator;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,9 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
@@ -29,11 +26,6 @@ public class PatientMapperTests {
 
     @Autowired
     PatientMapper mapper;
-
-    @Value("classpath:example-pseuded-patient.json")
-    Resource exampleResult;
-    @Value("classpath:example-null-flavor.json")
-    Resource exampleNullFlavor;
 
     private final static Logger log = LoggerFactory.getLogger(PatientMapperTests.class);
     private static FhirValidator validator;
@@ -72,26 +64,12 @@ public class PatientMapperTests {
         assertThat(validation.isSuccessful()).isTrue();
     }
 
-    @Test
-    public void exampleResultIsValid() throws IOException {
-        // arrange
-        var bundle = jsonParser.parseResource(Bundle.class, exampleNullFlavor.getInputStream());
-
-        // act
-        var validation = validator.validateWithResult(bundle);
-        FhirProfileValidator.prettyPrint(validation);
-        log.info(jsonParser.encodeResourceToString(bundle));
-
-        // assert
-        assertThat(validation.isSuccessful()).isTrue();
-    }
-
     private PatientModel createTestModel() {
         var model = new PatientModel();
         model.setId(1);
         model.setBirthDate(LocalDate.now()
             .minusYears(42));
-        model.setInvalidatedBy("000042");
+        model.setInvalidatedBy("000043");
         model.setFirstName("PETER");
         model.setLastName("LUSTIG");
         model.setPatientId("000042");

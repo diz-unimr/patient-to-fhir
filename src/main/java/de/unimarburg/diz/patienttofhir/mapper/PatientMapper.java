@@ -17,6 +17,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.HumanName.NameUse;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
@@ -85,7 +86,10 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
 
         // profile
         patient.setMeta(
-            new Meta().addProfile("https://fhir.miracum.org/core/StructureDefinition/PatientIn"));
+            new Meta().addProfile("https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient"));
+
+        // last modified
+        patient.getMeta().setLastUpdated(Date.from(model.getModified()));
 
         // identifier
         patient.addIdentifier(new Identifier().setSystem(fhirProperties.getSystems()
@@ -97,9 +101,9 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
             .setUse(Identifier.IdentifierUse.USUAL));
 
         // name
-        patient.addName(new HumanName().addPrefix(model.getTitle())
+        patient.addName(new HumanName()
             .addGiven(StringUtils.capitalize(model.getFirstName()))
-            .setFamily(StringUtils.capitalize(model.getLastName())));
+            .setFamily(StringUtils.capitalize(model.getLastName())).setUse(NameUse.OFFICIAL));
         if (StringUtils.isNotBlank(model.getTitle())) {
             patient.getNameFirstRep()
                 .addPrefix(StringUtils.capitalize(model.getTitle()));
@@ -120,6 +124,9 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
                 "Missing birth date for Patient[{}] with PID: {}. nullFlavor-Extension created instead.",
                 model.getId(), model.getPatientId());
         }
+
+        // address is missing
+        patient.addAddress().addExtension("http://hl7.org/fhir/StructureDefinition/data-absent-reason", new CodeType("unknown"));
 
         // gender
         patient.setGender(parseGender(model.getSex()));
