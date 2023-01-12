@@ -40,7 +40,7 @@ public class IntegrationTests extends TestContainerBase {
 
         assertThat(resources)
             .flatExtracting(r -> r.getMeta().getProfile()).extracting(PrimitiveType::getValue)
-            .containsOnly("https://fhir.miracum.org/core/StructureDefinition/PatientIn"
+            .containsOnly("https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient"
             );
     }
 
