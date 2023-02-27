@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.4'
+    id 'org.springframework.boot' version '3.0.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id "jacoco"
@@ -7,7 +7,7 @@ plugins {
 
 group = 'de.unimarburg.diz'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
@@ -39,9 +39,8 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 ext {
-    set('springBootVersion', "2.7.4")
-    set('springCloudVersion', "2021.0.2")
-    set("hapiFhirVersion", "5.7.1")
+    set('springCloudVersion', "2022.0.1")
+    set("hapiFhirVersion", "6.2.3")
     set('testContainersVersion', '1.16.3')
 }
 
@@ -52,8 +51,8 @@ dependencies {
     implementation "org.springframework.kafka:spring-kafka"
 
     // metrics
-    implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
-    implementation "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation 'io.micrometer:micrometer-registry-prometheus:1.10.4'
 
     // mapper
@@ -61,11 +60,7 @@ dependencies {
 
     // hapi fhir
     implementation "ca.uhn.hapi.fhir:hapi-fhir-base:$hapiFhirVersion"
-    constraints {
-        implementation('org.apache.commons:commons-text:1.10.0') {
-            because 'CVE-2022-42889'
-        }
-    }
+
     implementation "ca.uhn.hapi.fhir:hapi-fhir-client:$hapiFhirVersion"
     implementation "ca.uhn.hapi.fhir:hapi-fhir-structures-r4:$hapiFhirVersion"
     implementation "ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiFhirVersion"
