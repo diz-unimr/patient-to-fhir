@@ -21,7 +21,7 @@ public class KafkaHelper {
 
     public static <K, V> List<V> getAtLeast(Consumer<K, V> consumer, String topic, int fetchCount) {
         consumer.subscribe(Collections.singleton(topic));
-        var records = KafkaTestUtils.getRecords(consumer, Durations.TWO_MINUTES.toMillis(),
+        var records = KafkaTestUtils.getRecords(consumer, Durations.TWO_MINUTES,
             fetchCount);
         return StreamSupport.stream(records.spliterator(), false)
             .map(ConsumerRecord::value)

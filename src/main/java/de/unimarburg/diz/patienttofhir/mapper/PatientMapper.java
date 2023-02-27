@@ -155,16 +155,12 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
     }
 
     private AdministrativeGender parseGender(char sex) {
-        switch (sex) {
-            case 'O':
-                return AdministrativeGender.OTHER;
-            case 'F':
-                return AdministrativeGender.FEMALE;
-            case 'M':
-                return AdministrativeGender.MALE;
-            default:
-                return AdministrativeGender.UNKNOWN;
-        }
+        return switch (sex) {
+            case 'O' -> AdministrativeGender.OTHER;
+            case 'F' -> AdministrativeGender.FEMALE;
+            case 'M' -> AdministrativeGender.MALE;
+            default -> AdministrativeGender.UNKNOWN;
+        };
     }
 
     public Bundle fixBundleConditional(Bundle bundle) {
