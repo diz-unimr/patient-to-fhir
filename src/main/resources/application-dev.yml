@@ -3,15 +3,12 @@ spring:
     enabled: true
   kafka:
     bootstrapServers: ${BOOTSTRAP_SERVERS:localhost:9092}
-    security.protocol: SSL
+    security.protocol: ${SECURITY_PROTOCOL:PLAINTEXT}
     ssl:
-      trust-store-location: file://${user.dir}/dev/ssl/patient-to-fhir.truststore.jks
-      trust-store-password: ssl-test
-      key-store-location: file://${user.dir}/dev/ssl/patient-to-fhir.keystore.jks
-      key-store-password: ssl-test
-      key-password: ssl-test
-    properties:
-      ssl.endpoint.identification.algorithm:
+      trust-store-location: file://${SSL_TRUST_STORE_LOCATION_INTERNAL:/opt/patient-to-fhir/ssl/truststore.jks}
+      trust-store-password: ${SSL_TRUST_STORE_PASSWORD}
+      key-store-location: file://${SSL_KEY_STORE_LOCATION_INTERNAL:/opt/patient-to-fhir/ssl/keystore.jks}
+      key-store-password: ${SSL_KEY_STORE_PASSWORD}
 
 
   cloud:
