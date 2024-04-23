@@ -111,8 +111,8 @@ public abstract class TestContainerBase {
                                      String configFilename) throws Exception {
         // post connect configuration to REST endpoint
         var host =
-                "http://" + connect.getHost() + ":" +
-                        connect.getFirstMappedPort()
+                "http://" + connect.getHost() + ":"
+                        + connect.getFirstMappedPort()
                         + "/connectors";
         var request = HttpRequest
                 .newBuilder()
