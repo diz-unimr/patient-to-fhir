@@ -25,6 +25,17 @@ public class FhirProperties {
         this.useConditionalUpdate = useConditionalUpdate;
     }
 
+    @NotNull
+    private Boolean useConditionalCreate;
+
+    public Boolean getUseConditionalCreate() {
+        return useConditionalCreate;
+    }
+
+    public void setUseConditionalCreate(Boolean useConditionalCreate) {
+        this.useConditionalCreate = useConditionalCreate;
+    }
+
     public Systems getSystems() {
         return systems;
     }

@@ -10,7 +10,6 @@ spring:
       key-store-location: file://${SSL_KEY_STORE_LOCATION_INTERNAL:/opt/patient-to-fhir/ssl/keystore.jks}
       key-store-password: ${SSL_KEY_STORE_PASSWORD}
 
-
   cloud:
     stream:
       function.definition: process
@@ -33,6 +32,7 @@ fhir:
     patientId: "https://fhir.diz.uni-marburg.de/sid/patient-id"
   generateNarrative: false
   useConditionalUpdate: false
+  useConditionalCreate: true
 
 management:
   server:
