@@ -39,3 +39,4 @@ out/
 ### Node ###
 node_modules/
 adt_config
+application-dev.yml
