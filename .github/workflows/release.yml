@@ -4,11 +4,11 @@ name: release
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [ "build & test" ]
+    workflows: ["build & test"]
     branches: "master"
-    types: [ completed ]
+    types: [completed]
   release:
-    types: [ published ]
+    types: [published]
 
 permissions: read-all
 
