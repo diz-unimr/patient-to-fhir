@@ -58,28 +58,34 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
 
     private Bundle createBundle(Patient patient) {
         var bundle = new Bundle();
-        var resourceId = patient
-            .getIdentifierFirstRep()
-            .getValue();
 
         // set meta information
         bundle.setType(BundleType.TRANSACTION);
 
-        // build request
-        var request = new BundleEntryRequestComponent().setMethod(HTTPVerb.PUT);
-        if (fhirProperties.getUseConditionalUpdate()) {
-            request.setUrl(String.format("Patient?identifier=%s|%s", patient
-                .getIdentifierFirstRep()
-                .getSystem(), resourceId));
-        } else {
-            request.setUrl("Patient/" + resourceId);
-        }
+        var identifier = patient
+            .getIdentifierFirstRep();
 
+        // build request
+        var request = new BundleEntryRequestComponent();
+
+        if (fhirProperties.getUseConditionalUpdate()) {
+            request.setMethod(HTTPVerb.PUT);
+            request.setUrl(String.format("Patient?identifier=%s|%s", identifier
+                .getSystem(), identifier.getValue()));
+        } else if (fhirProperties.getUseConditionalCreate()) {
+            request.setMethod(HTTPVerb.POST)
+                .setUrl("Patient")
+                .setIfNoneExist(
+                    "identifier=%s|%s".formatted(identifier.getSystem(),
+                        identifier.getValue()));
+        } else {
+            request.setUrl("Patient/" + identifier.getValue());
+        }
         // add patient resource and request
         bundle
             .addEntry()
             .setResource(patient)
-            .setFullUrl("Patient/" + resourceId)
+            .setFullUrl("Patient/" + identifier.getValue())
             .setRequest(request);
 
         LOG.debug("Mapped successfully to FHIR bundle: {}",
@@ -92,7 +98,8 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         var patient = new Patient();
         // profile
         patient.setMeta(new Meta().addProfile(
-            "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient"));
+                "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient")
+            .setSource("#aim"));
 
         // last modified
         patient

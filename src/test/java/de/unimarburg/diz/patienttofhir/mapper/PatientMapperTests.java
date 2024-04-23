@@ -1,15 +1,10 @@
 package de.unimarburg.diz.patienttofhir.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.validation.FhirValidator;
 import de.unimarburg.diz.patienttofhir.configuration.FhirConfiguration;
 import de.unimarburg.diz.patienttofhir.model.PatientModel;
 import de.unimarburg.diz.patienttofhir.validator.FhirProfileValidator;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,14 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 @ContextConfiguration(classes = {PatientMapper.class, FhirConfiguration.class})
 public class PatientMapperTests {
 
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     @Autowired
     PatientMapper mapper;
 
-    private final static Logger log = LoggerFactory.getLogger(PatientMapperTests.class);
+    private static final Logger LOG =
+        LoggerFactory.getLogger(PatientMapperTests.class);
     private static FhirValidator validator;
     private static IParser jsonParser;
 
@@ -58,12 +61,24 @@ public class PatientMapperTests {
         // act
         var validation = validator.validateWithResult(bundle);
         FhirProfileValidator.prettyPrint(validation);
-        log.info(jsonParser.encodeResourceToString(bundle));
+        LOG.info(jsonParser.encodeResourceToString(bundle));
 
         // assert
         assertThat(validation.isSuccessful()).isTrue();
     }
 
+    @Test
+    public void mapperUsesConditionalCreate() {
+        var model = createTestModel();
+
+        var bundle = mapper.apply(model);
+
+        assertThat(bundle).isInstanceOf(Bundle.class)
+            .extracting(x -> x.getEntryFirstRep().getRequest().hasIfNoneExist())
+            .isEqualTo(true);
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
     private PatientModel createTestModel() {
         var model = new PatientModel();
         model.setId(1);
