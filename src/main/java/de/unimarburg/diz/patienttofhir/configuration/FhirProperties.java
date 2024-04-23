@@ -5,7 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 
-
 @ConfigurationProperties(prefix = "fhir")
 @Validated
 public class FhirProperties {
@@ -13,7 +12,7 @@ public class FhirProperties {
     private final Systems systems = new Systems();
     @NotNull
     private Boolean generateNarrative;
-    
+
 
     @NotNull
     private Boolean useConditionalUpdate;

@@ -15,18 +15,19 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBeanConfigurer;
 @EnableKafka
 public class KafkaConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(KafkaConfiguration.class);
+    private static final Logger LOG =
+        LoggerFactory.getLogger(KafkaConfiguration.class);
 
     @Bean
-    public StreamsBuilderFactoryBeanConfigurer streamsBuilderFactoryBeanCustomizer() {
-        return factoryBean -> {
-            factoryBean.setKafkaStreamsCustomizer(
-                kafkaStreams -> kafkaStreams.setUncaughtExceptionHandler(e -> {
-                    log.error("Uncaught exception occurred.", e);
+    public StreamsBuilderFactoryBeanConfigurer streamsBuilderCustomizer() {
+        return factoryBean -> factoryBean.setKafkaStreamsCustomizer(
+            kafkaStreams -> kafkaStreams.setUncaughtExceptionHandler(
+                e -> {
+                    LOG.error("Uncaught exception occurred.", e);
                     // default handler response
-                    return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
+                    return StreamsUncaughtExceptionHandler.
+                        StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
                 }));
-        };
     }
 
     @Bean

@@ -17,9 +17,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(classes = PatientToFhirApplication.class)
 public class IntegrationTests extends TestContainerBase {
 
+    private static final int FETCH_COUNT = 10;
+
     @DynamicPropertySource
     private static void kafkaProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrapServers", kafka::getBootstrapServers);
+        registry.add("spring.kafka.bootstrapServers",
+            kafka::getBootstrapServers);
     }
 
     @BeforeAll
@@ -27,21 +30,28 @@ public class IntegrationTests extends TestContainerBase {
         setup();
     }
 
+    @SuppressWarnings("checkstyle:LineLength")
     @Test
     public void bundlesAreMapped() {
         var messages = KafkaHelper.getAtLeast(
-            KafkaHelper.createFhirTopicConsumer(kafka.getBootstrapServers()), "patient-fhir", 10);
-        var resources = messages.stream()
+            KafkaHelper.createFhirTopicConsumer(kafka.getBootstrapServers()),
+            "patient-fhir", FETCH_COUNT);
+        var resources = messages
+            .stream()
             .map(Bundle.class::cast)
-            .flatMap(x -> x.getEntry()
+            .flatMap(x -> x
+                .getEntry()
                 .stream()
                 .map(BundleEntryComponent::getResource))
             .collect(Collectors.toList());
 
         assertThat(resources)
-            .flatExtracting(r -> r.getMeta().getProfile()).extracting(PrimitiveType::getValue)
-            .containsOnly("https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient"
-            );
+            .flatExtracting(r -> r
+                .getMeta()
+                .getProfile())
+            .extracting(PrimitiveType::getValue)
+            .containsOnly(
+                "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient");
     }
 
 }
