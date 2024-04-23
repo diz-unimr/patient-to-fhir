@@ -25,10 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = {PatientMapper.class, FhirConfiguration.class})
 public class PatientMapperTests {
 
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     @Autowired
     PatientMapper mapper;
 
-    private final static Logger log =
+    private static final Logger LOG =
         LoggerFactory.getLogger(PatientMapperTests.class);
     private static FhirValidator validator;
     private static IParser jsonParser;
@@ -60,7 +61,7 @@ public class PatientMapperTests {
         // act
         var validation = validator.validateWithResult(bundle);
         FhirProfileValidator.prettyPrint(validation);
-        log.info(jsonParser.encodeResourceToString(bundle));
+        LOG.info(jsonParser.encodeResourceToString(bundle));
 
         // assert
         assertThat(validation.isSuccessful()).isTrue();
@@ -74,10 +75,10 @@ public class PatientMapperTests {
 
         assertThat(bundle).isInstanceOf(Bundle.class)
             .extracting(x -> x.getEntryFirstRep().getRequest().hasIfNoneExist())
-            .isEqualTo(true)
-        ;
+            .isEqualTo(true);
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private PatientModel createTestModel() {
         var model = new PatientModel();
         model.setId(1);
