@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id "jacoco"
+    id 'checkstyle'
 }
 
 group = 'de.unimarburg.diz'
@@ -104,18 +105,14 @@ integrationTest {
     useJUnitPlatform()
 }
 
-jacoco {
-    toolVersion = "0.8.7"
-    reportsDirectory = layout.buildDirectory.dir('jacoco-reports')
-}
-
 jacocoTestReport {
     reports {
-        csv.required = true
-        csv.outputLocation = layout.buildDirectory.file('jacoco/coverage.csv')
-        html.outputLocation = layout.buildDirectory.dir('jacoco/html')
+        xml.required = true
+        html.required = false
     }
 }
+
+check.dependsOn jacocoTestReport
 
 jar {
     enabled = false
