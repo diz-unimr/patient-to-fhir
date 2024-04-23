@@ -4,8 +4,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import de.unimarburg.diz.patienttofhir.configuration.FhirProperties;
 import de.unimarburg.diz.patienttofhir.model.PatientModel;
-import java.time.ZoneId;
-import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.hl7.fhir.r4.model.Bundle;
@@ -28,14 +26,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.util.Date;
+
 @Service
 public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
 
     private final FhirProperties fhirProperties;
-    private final static Logger log = LoggerFactory.getLogger(PatientMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        PatientMapper.class);
     private final IParser fhirParser;
 
-    public PatientMapper(FhirProperties fhirProperties, FhirContext fhirContext) {
+    public PatientMapper(FhirProperties fhirProperties,
+                         FhirContext fhirContext) {
         this.fhirProperties = fhirProperties;
         this.fhirParser = fhirContext.newJsonParser();
     }
@@ -47,15 +50,16 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
             var patient = mapPatient(model);
             return createBundle(patient);
         } catch (Exception e) {
-            log.error("Mapping failed for Patient[{}] with id {}", model.getId(),
-                model.getPatientId(), e);
+            LOG.error("Mapping failed for Patient[{}] with id {}",
+                model.getId(), model.getPatientId(), e);
             return null;
         }
     }
 
     private Bundle createBundle(Patient patient) {
         var bundle = new Bundle();
-        var resourceId = patient.getIdentifierFirstRep()
+        var resourceId = patient
+            .getIdentifierFirstRep()
             .getValue();
 
         // set meta information
@@ -64,69 +68,84 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         // build request
         var request = new BundleEntryRequestComponent().setMethod(HTTPVerb.PUT);
         if (fhirProperties.getUseConditionalUpdate()) {
-            request.setUrl(String.format("Patient?identifier=%s|%s", patient.getIdentifierFirstRep()
+            request.setUrl(String.format("Patient?identifier=%s|%s", patient
+                .getIdentifierFirstRep()
                 .getSystem(), resourceId));
         } else {
             request.setUrl("Patient/" + resourceId);
         }
 
         // add patient resource and request
-        bundle.addEntry()
+        bundle
+            .addEntry()
             .setResource(patient)
             .setFullUrl("Patient/" + resourceId)
             .setRequest(request);
 
-        log.debug("Mapped successfully to FHIR bundle: {}",
+        LOG.debug("Mapped successfully to FHIR bundle: {}",
             fhirParser.encodeResourceToString(bundle));
         return bundle;
     }
 
+    @SuppressWarnings("checkstyle:LineLength")
     private Patient mapPatient(PatientModel model) {
         var patient = new Patient();
-
         // profile
-        patient.setMeta(
-            new Meta().addProfile("https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient"));
+        patient.setMeta(new Meta().addProfile(
+            "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient"));
 
         // last modified
-        patient.getMeta().setLastUpdated(Date.from(model.getModified()));
+        patient
+            .getMeta()
+            .setLastUpdated(Date.from(model.getModified()));
 
         // identifier
-        patient.addIdentifier(new Identifier().setSystem(fhirProperties.getSystems()
-            .getPatientId())
+        patient.addIdentifier(new Identifier()
+            .setSystem(fhirProperties
+                .getSystems()
+                .getPatientId())
             .setValue(model.getPatientId())
-            .setType(new CodeableConcept().addCoding(
-                new Coding().setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
-                    .setCode("MR")))
+            .setType(new CodeableConcept().addCoding(new Coding()
+                .setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
+                .setCode("MR")))
             .setUse(Identifier.IdentifierUse.USUAL));
 
         // name
         patient.addName(new HumanName()
             .addGiven(StringUtils.capitalize(model.getFirstName()))
-            .setFamily(StringUtils.capitalize(model.getLastName())).setUse(NameUse.OFFICIAL));
+            .setFamily(StringUtils.capitalize(model.getLastName()))
+            .setUse(NameUse.OFFICIAL));
         if (StringUtils.isNotBlank(model.getTitle())) {
-            patient.getNameFirstRep()
+            patient
+                .getNameFirstRep()
                 .addPrefix(StringUtils.capitalize(model.getTitle()));
         }
 
-        // birth date
+        // birthdate
         // uses application wide timezone
         if (model.getBirthDate() != null) {
-            patient.setBirthDate(Date.from(model.getBirthDate()
+            patient.setBirthDate(Date.from(model
+                .getBirthDate()
                 .atStartOfDay()
-                .atZone(ZoneId.systemDefault(   ))
+                .atZone(ZoneId.systemDefault())
                 .toInstant()));
         } else {
-            patient.getBirthDateElement()
-                .addExtension("http://hl7.org/fhir/StructureDefinition/iso21090-nullFlavor",
+            patient
+                .getBirthDateElement()
+                .addExtension(
+                    "http://hl7.org/fhir/StructureDefinition/iso21090-nullFlavor",
                     new CodeType("UNK"));
-            log.warn(
+            LOG.warn(
                 "Missing birth date for Patient[{}] with PID: {}. nullFlavor-Extension created instead.",
                 model.getId(), model.getPatientId());
         }
 
         // address is missing
-        patient.addAddress().addExtension("http://hl7.org/fhir/StructureDefinition/data-absent-reason", new CodeType("unknown"));
+        patient
+            .addAddress()
+            .addExtension(
+                "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                new CodeType("unknown"));
 
         // gender
         patient.setGender(parseGender(model.getSex()));
@@ -137,17 +156,21 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
 
             if (fhirProperties.getUseConditionalUpdate()) {
                 // use logical reference
-                link.setOther(new Reference().setIdentifier(new Identifier().setSystem(
-                    fhirProperties.getSystems()
+                link.setOther(new Reference().setIdentifier(new Identifier()
+                    .setSystem(fhirProperties
+                        .getSystems()
                         .getPatientId())
                     .setValue(model.getInvalidatedBy())
-                    .setType(new CodeableConcept().addCoding(
-                        new Coding().setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
-                            .setCode("MR")))));
+                    .setType(new CodeableConcept().addCoding(new Coding()
+                        .setSystem(
+                            "http://terminology.hl7.org/CodeSystem/v2-0203")
+                        .setCode("MR")))));
             } else {
-                link.setOther(new Reference("Patient/" + model.getInvalidatedBy()));
+                link.setOther(
+                    new Reference("Patient/" + model.getInvalidatedBy()));
             }
-            patient.addLink(link)
+            patient
+                .addLink(link)
                 .setActive(false);
         }
 
@@ -166,11 +189,13 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
     public Bundle fixBundleConditional(Bundle bundle) {
         if (fhirProperties.getUseConditionalUpdate()) {
             var patientEntry = bundle.getEntryFirstRep();
-            var identifier = ((Patient) patientEntry.getResource()).getIdentifierFirstRep();
+            var identifier =
+                ((Patient) patientEntry.getResource()).getIdentifierFirstRep();
 
-            patientEntry.getRequest()
-                .setUrl(String.format("Patient?identifier=%s|%s", identifier.getSystem(),
-                    identifier.getValue()));
+            patientEntry
+                .getRequest()
+                .setUrl(String.format("Patient?identifier=%s|%s",
+                    identifier.getSystem(), identifier.getValue()));
         }
         return bundle;
     }

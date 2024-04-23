@@ -9,7 +9,7 @@ import org.hl7.fhir.r4.model.Resource;
 
 public class FhirDeserializer<T extends Resource> extends JsonDeserializer<T> {
 
-    private static final FhirContext fhirContext = FhirContext.forR4();
+    private static final FhirContext FHIR_CONTEXT = FhirContext.forR4();
     private final Class<T> classType;
 
     public FhirDeserializer(Class<T> classType) {
@@ -18,13 +18,15 @@ public class FhirDeserializer<T extends Resource> extends JsonDeserializer<T> {
 
 
     @Override
-    public T deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
+    public T deserialize(JsonParser p, DeserializationContext ctx)
+        throws IOException {
         return deserialize(classType, p, ctx);
     }
 
-    public T deserialize(Class<T> classType, JsonParser p, DeserializationContext ctx)
-        throws IOException {
-        return fhirContext.newJsonParser()
+    public T deserialize(Class<T> classType, JsonParser p,
+        DeserializationContext ctx) throws IOException {
+        return FHIR_CONTEXT
+            .newJsonParser()
             .parseResource(classType, p.getValueAsString());
     }
 
