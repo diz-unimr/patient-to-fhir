@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "de.basisprofil.r4": "^0.9.13",
+    "de.basisprofil.r4": "^1.0.0",
     "de.medizininformatikinitiative.kerndatensatz.meta": "^1.0.3",
     "de.medizininformatikinitiative.kerndatensatz.person": "^1.0.16",
     "hl7.fhir.r4.core": "^4.0.1"
