@@ -3,12 +3,6 @@ package de.unimarburg.diz.patienttofhir.validator;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -17,45 +11,62 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 public class FhirResourceLoader {
 
-    private final static Logger log = LoggerFactory.getLogger(FhirResourceLoader.class);
+    private static final Logger LOG =
+        LoggerFactory.getLogger(FhirResourceLoader.class);
 
-    public static List<IBaseResource> loadFromDirectory(FhirContext ctx, String inputPath,String fileNamePattern) {
-        return load(ctx, "file:"+inputPath,fileNamePattern);
+
+    public static List<IBaseResource> loadFromDirectory(FhirContext ctx,
+                                                        String inputPath,
+                                                        String pattern) {
+        return load(ctx, "file:" + inputPath, pattern);
     }
 
-    public static List<IBaseResource> loadFromClasspath(FhirContext ctx, String inputPath,String fileNamePattern) {
-        return load(ctx, "classpath*:"+inputPath,fileNamePattern);
+    public static List<IBaseResource> loadFromClasspath(FhirContext ctx,
+                                                        String inputPath,
+                                                        String pattern) {
+        return load(ctx, "classpath*:" + inputPath, pattern);
     }
 
     public static List<IBaseResource> load(FhirContext ctx, String inputPath,
-        String fileNamePattern) {
-        ResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+                                           String fileNamePattern) {
+        ResourcePatternResolver patternResolver =
+            new PathMatchingResourcePatternResolver();
         try {
-            var locationPattern = String.format("%s/**/%s", inputPath, fileNamePattern);
-            log.info("Looking for input files in: {}", locationPattern);
+            var locationPattern =
+                String.format("%s/**/%s", inputPath, fileNamePattern);
+            LOG.info("Looking for input files in: {}", locationPattern);
             return Arrays.stream(patternResolver.getResources(locationPattern))
                 .map(r -> tryParseResource(r, ctx))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         } catch (IOException e) {
-            log.debug("Could not get file handle of resource", e);
+            LOG.debug("Could not get file handle of resource", e);
         }
         return List.of();
     }
 
-    private static IBaseResource tryParseResource(Resource fileResource, FhirContext ctx) {
+    private static IBaseResource tryParseResource(Resource fileResource,
+                                                  FhirContext ctx) {
         try {
             var parser = getParser(fileResource.getFile(), ctx);
             if (parser == null) {
-                log.debug("Unable to get parser for file {}", fileResource.getFilename());
+                LOG.debug("Unable to get parser for file {}",
+                    fileResource.getFilename());
                 return null;
             }
             return parser.parseResource(fileResource.getInputStream());
 
         } catch (IOException e) {
-            log.debug("Could not get file handle of resource", e);
+            LOG.debug("Could not get file handle of resource", e);
         } catch (DataFormatException de) {
             // not a FHIR resource
             return null;
