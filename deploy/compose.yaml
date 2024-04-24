@@ -1,0 +1,15 @@
+services:
+  patient-to-fhir:
+    image: ghcr.io/diz-unimr/patient-to-fhir:latest
+    environment:
+      SPRING_CLOUD_STREAM_BINDINGS_PROCESS_IN_0_DESTINATION: aim-patient
+      SPRING_CLOUD_STREAM_BINDINGS_PROCESS_OUT_0_DESTINATION: patient-fhir
+      SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: localhost:9092
+      SECURITY_PROTOCOL: SSL
+      SSL_KEY_STORE_PASSWORD: ${SSL_KEY_STORE_PASSWORD}
+      SSL_TRUST_STORE_PASSWORD: ${SSL_TRUST_STORE_PASSWORD}
+    ports:
+      - "${WEB_PORT:-8090}:8080"
+    volumes:
+      - ${SSL_KEY_STORE_LOCATION}:/opt/patient-to-fhir/ssl/keystore.jks
+      - ${SSL_TRUST_STORE_LOCATION}:/opt/patient-to-fhir/ssl/truststore.jks

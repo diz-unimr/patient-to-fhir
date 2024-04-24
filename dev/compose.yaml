@@ -42,7 +42,6 @@ services:
       - zoo
       - kafka
 
-
   kafka-connect:
     image: confluentinc/cp-kafka-connect:5.5.0
     ports:
@@ -105,4 +104,3 @@ services:
       - POSTGRES_PASSWORD=test
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d:ro
-

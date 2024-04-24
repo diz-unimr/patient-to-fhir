@@ -5,9 +5,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.ValidationResult;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
@@ -20,9 +17,14 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class FhirProfileValidator {
 
-    private final static Logger log = LoggerFactory.getLogger(FhirProfileValidator.class);
+    private static final Logger LOG =
+        LoggerFactory.getLogger(FhirProfileValidator.class);
 
     private static Collection<StructureDefinition> loadedProfiles;
     private static Collection<CodeSystem> loadedCodeSystems;
@@ -40,12 +42,15 @@ public class FhirProfileValidator {
         //        getCodeSystems(ctx).forEach(customValidation::addCodeSystem);
         //        getValueSets(ctx).forEach(customValidation::addValueSet);
 
-        // We'll create a chain that includes both the pre-populated and default. We put
-        // the pre-populated (custom) support module first so that it takes precedence
-        var validationSupportChain = new ValidationSupportChain(customValidation,
-            new SnapshotGeneratingValidationSupport(ctx), new DefaultProfileValidationSupport(ctx),
-            new InMemoryTerminologyServerValidationSupport(ctx),
-            new CommonCodeSystemsTerminologyService(ctx));
+        // We'll create a chain that includes both the pre-populated and
+        // default. We put the pre-populated (custom) support module first so
+        // that it takes precedence
+        var validationSupportChain =
+            new ValidationSupportChain(customValidation,
+                new SnapshotGeneratingValidationSupport(ctx),
+                new DefaultProfileValidationSupport(ctx),
+                new InMemoryTerminologyServerValidationSupport(ctx),
+                new CommonCodeSystemsTerminologyService(ctx));
 
         var validatorModule = new FhirInstanceValidator(validationSupportChain);
         validator.registerValidatorModule(validatorModule);
@@ -53,12 +58,16 @@ public class FhirProfileValidator {
         return validator;
     }
 
-    private static Collection<StructureDefinition> getProfiles(FhirContext ctx) {
+    private static Collection<StructureDefinition> getProfiles(
+        FhirContext ctx) {
         // get profiles
         if (loadedProfiles == null || loadedProfiles.isEmpty()) {
             loadedProfiles = Stream
-                .concat(FhirResourceLoader.loadFromClasspath(ctx, "fhir", "*.json").stream(),
-                    FhirResourceLoader.loadFromDirectory(ctx, "node_modules", "*.json").stream())
+                .concat(
+                    FhirResourceLoader.loadFromClasspath(ctx, "fhir", "*.json")
+                        .stream(),
+                    FhirResourceLoader.loadFromDirectory(ctx, "node_modules",
+                        "*.json").stream())
                 .filter(StructureDefinition.class::isInstance)
                 .map(StructureDefinition.class::cast)
                 .collect(Collectors.toList());
@@ -69,11 +78,12 @@ public class FhirProfileValidator {
     private static Collection<CodeSystem> getCodeSystems(FhirContext ctx) {
         // get code systems
         if (loadedCodeSystems == null || loadedCodeSystems.isEmpty()) {
-            loadedCodeSystems = FhirResourceLoader.loadFromDirectory(ctx, "codesystems", "*")
-                .stream()
-                .filter(CodeSystem.class::isInstance)
-                .map(CodeSystem.class::cast)
-                .collect(Collectors.toList());
+            loadedCodeSystems =
+                FhirResourceLoader.loadFromDirectory(ctx, "codesystems", "*")
+                    .stream()
+                    .filter(CodeSystem.class::isInstance)
+                    .map(CodeSystem.class::cast)
+                    .collect(Collectors.toList());
         }
         return loadedCodeSystems;
     }
@@ -81,39 +91,51 @@ public class FhirProfileValidator {
     private static Collection<ValueSet> getValueSets(FhirContext ctx) {
         // get value sets
         if (loadedValueSets == null || loadedValueSets.isEmpty()) {
-            loadedValueSets = FhirResourceLoader.loadFromDirectory(ctx, "valueset", "*")
-                .stream()
-                .filter(ValueSet.class::isInstance)
-                .map(ValueSet.class::cast)
-                .collect(Collectors.toList());
+            loadedValueSets =
+                FhirResourceLoader.loadFromDirectory(ctx, "valueset", "*")
+                    .stream()
+                    .filter(ValueSet.class::isInstance)
+                    .map(ValueSet.class::cast)
+                    .collect(Collectors.toList());
         }
         return loadedValueSets;
     }
 
     public static void prettyPrint(ValidationResult validationResult) {
-        prettyPrint(log, validationResult);
+        prettyPrint(LOG, validationResult);
     }
 
-    public static void prettyPrint(Logger log, ValidationResult validationResult) {
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public static void prettyPrint(Logger log,
+                                   ValidationResult validationResult) {
         validationResult.getMessages()
             .forEach(message -> {
 
                 switch (message.getSeverity()) {
                     case ERROR:
-                        log.error((char) 27 + "[31mFHIR Validation" + (char) 27 + "[0m" + ": "
-                            + message.getLocationString() + " - " + message.getMessage());
+                        log.error(
+                            (char) 27 + "[31mFHIR Validation" + (char) 27
+                                + "[0m" + ": "
+                                + message.getLocationString() + " - "
+                                + message.getMessage());
                         break;
                     case WARNING:
-                        log.warn((char) 27 + "[33mFHIR Validation" + (char) 27 + "[0m" + ": "
-                            + message.getLocationString() + " - " + message.getMessage());
+                        log.warn((char) 27 + "[33mFHIR Validation" + (char) 27
+                            + "[0m" + ": "
+                            + message.getLocationString() + " - "
+                            + message.getMessage());
                         break;
                     case INFORMATION:
-                        log.info((char) 27 + "[34mFHIR Validation" + (char) 27 + "[0m" + ": "
-                            + message.getLocationString() + " - " + message.getMessage());
+                        log.info((char) 27 + "[34mFHIR Validation" + (char) 27
+                            + "[0m" + ": "
+                            + message.getLocationString() + " - "
+                            + message.getMessage());
                         break;
                     default:
-                        log.debug("Validation issue " + message.getSeverity() + " - "
-                            + message.getLocationString() + " - " + message.getMessage());
+                        log.debug(
+                            "Validation issue " + message.getSeverity() + " - "
+                                + message.getLocationString() + " - "
+                                + message.getMessage());
                 }
             });
     }
