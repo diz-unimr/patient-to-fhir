@@ -39,8 +39,8 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 ext {
-    set('springCloudVersion', "2022.0.5")
-    set("hapiFhirVersion", "6.2.3")
+    set('springCloudVersion', "2023.0.1")
+    set("hapiFhirVersion", "7.0.2")
     set('testContainersVersion', '1.19.7')
 }
 
@@ -65,6 +65,7 @@ dependencies {
     implementation "ca.uhn.hapi.fhir:hapi-fhir-structures-r4:$hapiFhirVersion"
     implementation "ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiFhirVersion"
     implementation "ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:$hapiFhirVersion"
+    implementation "ca.uhn.hapi.fhir:hapi-fhir-caching-caffeine:$hapiFhirVersion"
     implementation 'org.miracum:kafka-fhir-serializer:1.0.5'
 
     // unit tests
