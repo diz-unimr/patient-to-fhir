@@ -53,7 +53,7 @@ dependencies {
     // metrics
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation 'io.micrometer:micrometer-registry-prometheus:1.10.4'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.12.5'
 
     // mapper
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
