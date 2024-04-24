@@ -15,7 +15,7 @@
   "dependencies": {
     "de.basisprofil.r4": "^0.9.13",
     "de.medizininformatikinitiative.kerndatensatz.meta": "^1.0.3",
-    "de.medizininformatikinitiative.kerndatensatz.person": "^1.0.16",
+    "de.medizininformatikinitiative.kerndatensatz.person": "^2024.0.0",
     "hl7.fhir.r4.core": "^4.0.1"
   }
 }
