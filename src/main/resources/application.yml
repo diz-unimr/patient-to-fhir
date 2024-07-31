@@ -31,6 +31,7 @@ fhir:
   systems:
     patientId: "https://fhir.diz.uni-marburg.de/sid/patient-id"
   generateNarrative: false
+  useLogicalReferences: true
   useConditionalUpdate: false
   useConditionalCreate: true
 

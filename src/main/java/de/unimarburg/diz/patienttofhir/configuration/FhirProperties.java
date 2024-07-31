@@ -13,6 +13,16 @@ public class FhirProperties {
     @NotNull
     private Boolean generateNarrative;
 
+    @NotNull
+    private Boolean useLogicalReferences;
+
+    public Boolean getUseLogicalReferences() {
+        return useLogicalReferences;
+    }
+
+    public void setUseLogicalReferences(Boolean useLogicalReferences) {
+        this.useLogicalReferences = useLogicalReferences;
+    }
 
     @NotNull
     private Boolean useConditionalUpdate;
