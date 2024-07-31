@@ -161,7 +161,7 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         if (model.getInvalidatedBy() != null) {
             var link = new PatientLinkComponent().setType(LinkType.REPLACEDBY);
 
-            if (fhirProperties.getUseConditionalUpdate()) {
+            if (fhirProperties.getUseLogicalReferences()) {
                 // use logical reference
                 link.setOther(new Reference().setIdentifier(new Identifier()
                     .setSystem(fhirProperties
