@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '3.2.5'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'io.spring.dependency-management' version '1.1.6'
     id 'java'
     id "jacoco"
 }
@@ -39,7 +39,7 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 ext {
-    set('springCloudVersion', "2023.0.1")
+    set('springCloudVersion', "2023.0.3")
     set("hapiFhirVersion", "7.0.2")
     set('testContainersVersion', '1.19.7')
 }
@@ -66,11 +66,11 @@ dependencies {
     implementation "ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiFhirVersion"
     implementation "ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:$hapiFhirVersion"
     implementation "ca.uhn.hapi.fhir:hapi-fhir-caching-caffeine:$hapiFhirVersion"
-    implementation 'org.miracum:kafka-fhir-serializer:1.0.5'
+    implementation 'org.miracum:kafka-fhir-serializer:1.0.6'
 
     // unit tests
     testImplementation 'org.springframework.cloud:spring-cloud-stream'
-    testImplementation 'org.apache.kafka:kafka-streams-test-utils:3.7.0'
+    testImplementation 'org.apache.kafka:kafka-streams-test-utils:3.8.0'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -87,7 +87,7 @@ dependencies {
     intTestImplementation "org.testcontainers:kafka:$testContainersVersion"
     intTestImplementation "org.testcontainers:postgresql:$testContainersVersion"
     intTestImplementation "org.testcontainers:junit-jupiter:$testContainersVersion"
-    intTestImplementation 'org.awaitility:awaitility:4.2.1'
+    intTestImplementation 'org.awaitility:awaitility:4.2.2'
     intTestImplementation 'org.assertj:assertj-core:3.25.3'
 }
 
