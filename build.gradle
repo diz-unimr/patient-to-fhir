@@ -39,7 +39,7 @@ task integrationTest(type: Test) {
 check.dependsOn integrationTest
 
 ext {
-    set('springCloudVersion', "2023.0.1")
+    set('springCloudVersion', "2023.0.3")
     set("hapiFhirVersion", "7.0.2")
     set('testContainersVersion', '1.19.7')
 }
