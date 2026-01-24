@@ -77,7 +77,7 @@ dependencies {
     }
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
-    testImplementation 'org.assertj:assertj-core:3.25.3'
+    testImplementation 'org.assertj:assertj-core:3.27.7'
 
     // integration tests
     intTestImplementation 'org.springframework.kafka:spring-kafka-test'
@@ -88,7 +88,7 @@ dependencies {
     intTestImplementation "org.testcontainers:postgresql:$testContainersVersion"
     intTestImplementation "org.testcontainers:junit-jupiter:$testContainersVersion"
     intTestImplementation 'org.awaitility:awaitility:4.2.2'
-    intTestImplementation 'org.assertj:assertj-core:3.25.3'
+    intTestImplementation 'org.assertj:assertj-core:3.27.7'
 }
 
 dependencyManagement {
