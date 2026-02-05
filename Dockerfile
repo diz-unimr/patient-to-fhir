@@ -1,6 +1,6 @@
 FROM gradle:8.14.4-jdk21 AS build
 WORKDIR /home/gradle/src
-ENV GRADLE_USER_HOME /gradle
+ENV GRADLE_USER_HOME=/gradle
 
 COPY build.gradle settings.gradle ./
 RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
