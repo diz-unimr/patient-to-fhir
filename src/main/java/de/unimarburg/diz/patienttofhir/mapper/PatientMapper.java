@@ -85,7 +85,6 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         bundle
             .addEntry()
             .setResource(patient)
-            .setFullUrl("Patient/" + identifier.getValue())
             .setRequest(request);
 
         LOG.debug("Mapped successfully to FHIR bundle: {}",

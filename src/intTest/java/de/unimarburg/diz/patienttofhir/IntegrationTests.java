@@ -51,7 +51,7 @@ public class IntegrationTests extends TestContainerBase {
                 .getProfile())
             .extracting(PrimitiveType::getValue)
             .containsOnly(
-                "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient");
+                "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient|2025.0.1");
     }
 
 }
