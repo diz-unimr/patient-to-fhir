@@ -15,6 +15,12 @@ public class FhirProperties {
 
     @NotNull
     private Boolean useLogicalReferences;
+    @NotNull
+    private Boolean useConditionalUpdate;
+    @NotNull
+    private Boolean useConditionalCreate;
+    @NotNull
+    private String profile;
 
     public Boolean getUseLogicalReferences() {
         return useLogicalReferences;
@@ -24,9 +30,6 @@ public class FhirProperties {
         this.useLogicalReferences = useLogicalReferences;
     }
 
-    @NotNull
-    private Boolean useConditionalUpdate;
-
     public Boolean getUseConditionalUpdate() {
         return useConditionalUpdate;
     }
@@ -34,9 +37,6 @@ public class FhirProperties {
     public void setUseConditionalUpdate(Boolean useConditionalUpdate) {
         this.useConditionalUpdate = useConditionalUpdate;
     }
-
-    @NotNull
-    private Boolean useConditionalCreate;
 
     public Boolean getUseConditionalCreate() {
         return useConditionalCreate;
@@ -56,6 +56,14 @@ public class FhirProperties {
 
     public void setGenerateNarrative(Boolean generateNarrative) {
         this.generateNarrative = generateNarrative;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 
     public static class Systems {

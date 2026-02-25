@@ -30,6 +30,7 @@ spring:
 fhir:
   systems:
     patientId: "https://fhir.diz.uni-marburg.de/sid/patient-id"
+  profile: "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient|2026.0.0"
   generateNarrative: false
   useLogicalReferences: true
   useConditionalUpdate: false
