@@ -97,7 +97,7 @@ public class PatientMapper implements ValueMapper<PatientModel, Bundle> {
         var patient = new Patient();
         // profile
         patient.setMeta(new Meta().addProfile(fhirProperties.getProfile())
-            .setSource("#aim"));
+            .setSource("https://fhir.diz.uni-marburg.de/data-source/aim"));
 
         // last modified
         patient
