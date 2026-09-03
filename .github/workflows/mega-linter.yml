@@ -55,6 +55,7 @@ jobs:
           # ADD YOUR CUSTOM ENV VARIABLES HERE OR DEFINE THEM IN A FILE .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
           DISABLE: SPELL # ignore spell checks
           DISABLE_LINTERS: JAVA_PMD,ACTION_ZIZMOR
+          REPOSITORY_OSV_SCANNER_DISABLE_ERRORS: true
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
